@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Resultados da Análise - Steam</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-button">&larr; Voltar para a Página Principal</a>
+
+        <h1>Resultados da Pesquisa</h1>
+
+        <div class="results-section">
+            {% if resultados_html %}
+                <h2>Encontrados {{ total_jogos }} jogos com os filtros aplicados</h2>
+                <h3>Dados Coletados (Exibindo os 20 primeiros)</h3>
+                {{ resultados_html|safe }}
+
+                <h3>Visualizações</h3>
+                <div class="graphs">
+                    {{ grafico_preco|safe }}
+                    {{ grafico_avaliacao|safe }}
+                    {{ grafico_boxplot|safe }}
+                    {{ grafico_scatter|safe }}
+                </div>
+            {% else %}
+                <h2>Nenhum resultado encontrado.</h2>
+                <p>Tente ajustar os filtros na página principal ou realize uma nova mineração de dados se o banco estiver vazio.</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
