@@ -1,0 +1,8 @@
+Flask
+flask-socketio
+SQLAlchemy
+pymysql
+pandas
+selenium
+beautifulsoup4
+plotly
