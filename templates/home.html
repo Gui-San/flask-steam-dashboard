@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard Steam - Início</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Dashboard de Exploração de Jogos da Steam</h1>
+
+        <div class="card">
+            <h2><span class="icon">&#128269;</span> Coleta de Dados da Steam</h2>
+            <p>Clique no botão para buscar os dados mais recentes da Steam. O processo pode levar alguns minutos e o progresso será exibido abaixo.</p>
+            <button id="start-mining-btn" class="action-btn">Iniciar Mineração de Dados</button>
+            <div id="mining-status">
+                </div>
+        </div>
+
+        <form class="filter-form" action="/resultados" method="GET">
+            <h2>Filtros</h2>
+            <div class="form-group">
+                <label for="termo">Pesquisar por Título:</label>
+                <input type="text" id="termo" name="termo" placeholder="Ex: Cyberpunk, The Witcher...">
+            </div>
+            <div class="form-group">
+                <label for="preco_min">Preço Mínimo (R$):</label>
+                <input type="number" id="preco_min" name="preco_min" min="0" max="1000" placeholder="0">
+            </div>
+            <div class="form-group">
+                <label for="preco_max">Preço Máximo (R$):</label>
+                <input type="number" id="preco_max" name="preco_max" min="0" max="1000" placeholder="1000">
+            </div>
+            <div class="form-group">
+                <label for="avaliacao">Tipo de Avaliação:</label>
+                <select id="avaliacao" name="avaliacao">
+                    <option value="">Todas</option>
+                    <option value="Extremamente positivas">Extremamente Positivas</option>
+                    <option value="Muito positivas">Muito Positivas</option>
+                    <option value="Positivas">Positivas</option>
+                    <option value="Ligeiramente positivas">Ligeiramente Positivas</option>
+                    <option value="Análises Variadas">Variadas</option>
+                    <option value="Ligeiramente negativas">Ligeiramente Negativas</option>
+                    <option value="Negativas">Negativas</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <button type="submit" class="action-btn">Aplicar Filtros e Visualizar</button>
+            </div>
+        </form>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.min.js"></script>
+    <script>
+        const socket = io();
+        const startBtn = document.getElementById('start-mining-btn');
+        const statusDiv = document.getElementById('mining-status');
+
+        startBtn.addEventListener('click', () => {
+            statusDiv.innerHTML = '<p class="status-info">Iniciando o processo...</p>';
+            startBtn.disabled = true;
+            startBtn.innerText = 'Minerando...';
+            socket.emit('iniciar_mineracao');
+        });
+
+        socket.on('update_status', function(data) {
+            statusDiv.innerHTML += `<p class="status-${data.type}">${data.msg}</p>`;
+            statusDiv.scrollTop = statusDiv.scrollHeight;
+        });
+
+        socket.on('mineracao_concluida', function(data) {
+            startBtn.disabled = false;
+            startBtn.innerText = 'Iniciar Mineração de Dados';
+            statusDiv.innerHTML += `<p class="status-success"><strong>${data.msg}</strong></p>`;
+        });
+    </script>
+</body>
+</html>
